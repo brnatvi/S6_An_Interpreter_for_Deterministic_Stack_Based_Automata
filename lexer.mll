@@ -2,35 +2,25 @@
 open Parser
 }
 
-let white = [' ']
-let newline = ['\r'] | ['\n'] | ["\r\n"]    (* which one for Linux ? *)
+let layout = [' ' '\n']
 let digit = ['0'-'9']
 let upper = ['A'-'Z']
 let lower = ['a'-'z']
-let lettre = digit | upper | lower
 
-let keywords =
-[
-  "input symbols :", INPUT;
-  "stack symbols :", STACKSYMB;
-  "states :", STATES;
-  "initial state :", INSTACK;
-  "initial stack :", INSTATE;
-  "transitions :", TRANS; 
-]
-
-let next_line lexbuf =
-  failwith "TODO"
-
-
-rule main = parse
-  | white     { main lexbuf }
-  | newline   { next_line lexbuf; main lexbuf }
-  | ')'			  { RPAREN }
-  | '('			  { LPAREN }
-  | ";"		    { SEMI }
-  | ","		    { COMMA }
-  | lettre    { LETTER (Lexing.lexeme lexbuf) }
-  | keywords  { KW (Lexing.lexeme lexbuf) } 
-  | eof			  { EOF }
-  | _			    { failwith "unexpected character" }
+rule lexer = parse
+  | layout            { lexer lexbuf }
+  | ')'			          { RPAREN }
+  | '('			          { LPAREN }
+  | ";"		            { SEMI }
+  | ","		            { COMMA }
+  | "input symbols :" { INPUTSYMBOLS }
+  | "stack symbols :" { STACKSYMBOLS }
+  | "states :"        { STATES }
+  | "initial state :" { INITIALSTATE }
+  | "initial stack :" { INITIALSTACK }
+  | "transitions :"   { TRANSITIONS }
+  | digit             { DIGIT (Lexing.lexeme lexbuf) }
+  | upper             { UPPER (Lexing.lexeme lexbuf) }
+  | lower             { LOWER (Lexing.lexeme lexbuf) } 
+  | eof			          { EOF }
+  | _			            { failwith "unexpected character" }
