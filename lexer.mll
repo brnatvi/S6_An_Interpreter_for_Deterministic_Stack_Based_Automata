@@ -2,13 +2,15 @@
 open Parser
 }
 
-let layout = [' ' '\n']
+let white = [' ' '\t']+
+let newline = '\r' | '\n' | "\r\n"
 let digit = ['0'-'9']
 let upper = ['A'-'Z']
 let lower = ['a'-'z']
 
 rule lexer = parse
-  | layout            { lexer lexbuf }
+  | white             { lexer lexbuf }
+  | newline           { Lexing.new_line lexbuf; lexer lexbuf }
   | ')'			          { RPAREN }
   | '('			          { LPAREN }
   | ";"		            { SEMI }
@@ -19,7 +21,7 @@ rule lexer = parse
   | "initial state :" { INITIALSTATE }
   | "initial stack :" { INITIALSTACK }
   | "transitions :"   { TRANSITIONS }
-  | digit             { DIGIT (Lexing.lexeme lexbuf) }
+  | digit             { DIGIT (int_of_string (Lexing.lexeme lexbuf)) }
   | upper             { UPPER (Lexing.lexeme lexbuf) }
   | lower             { LOWER (Lexing.lexeme lexbuf) } 
   | eof			          { EOF }
