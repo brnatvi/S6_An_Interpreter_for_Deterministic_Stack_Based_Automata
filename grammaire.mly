@@ -6,26 +6,26 @@
 %%
 
 automate:
-  declarations; transitions; EOF {}
+  d = declarations; tr = transitions; EOF {Automate(d, tr)}
 
 
 declarations:
-  inputsymbols; stacksymbols; states; initialstate; initialstack {}
+  p1 = inputsymbols; p2 = stacksymbols; p3 = states; p4 = initialstate; p5 = initialstack {Declarations(p1, p2, p3, p4, p5)}
 
 inputsymbols:
-  INPUTSYMBOLS; suite_min_nonvide {}
+  INPUTSYMBOLS; isb = suite_min_nonvide {Inputsymbols(isb)}
 
 stacksymbols:
-  STACKSYMBOLS; suite_maj_nonvide {}
+  STACKSYMBOLS; stsmb = suite_maj_nonvide {Stacksymbols(stsmb)}
 
 states:
-  STATES; suite_num_nonvide {}
+  STATES; s = suite_num_nonvide {States(s)}
 
 initialstate:
-  INITIALSTATE; num {}
+  INITIALSTATE; ist = num {Initialstate(ist)}
 
 initialstack:
-  INITIALSTACK; lettre_maj {}
+  INITIALSTACK; isk = lettre_maj {Initialstack(isk)}
 
 
 num:
@@ -39,7 +39,7 @@ lettre_maj:
 *)
 
 suite_maj_nonvide:
-  UPPER; COMMA; suite_maj_nonvide {} 
+  u = UPPER COMMA s = suite_maj_nonvide {} 
 | UPPER {}
 
 suite_min_nonvide:
@@ -52,22 +52,21 @@ suite_num_nonvide:
 
 
 transitions:
-  TRANSITIONS; translist {}
+  TRANSITIONS; tl = translist {Transitions(tl)}
 
 translist:
   transition translist {}
 | {}
 
 transition:
-  LPAREN; DIGIT; COMMA; lettre_min_ou_vide; COMMA; 
-  UPPER; COMMA; DIGIT; COMMA; pile; RPAREN {}
+  LPAREN; l1 = lettre_min; COMMA; l2 = lettre_min_ou_vide; COMMA; l3 = lettre_min; COMMA; l3 = lettre_min; COMMA; s = stack; RPAREN {Transition(l1, l2, l3, l4, s)}
 
 lettre_min_ou_vide:
   LOWER {}
 | {}
 
-pile:
-  UPPER; SEMI; pile {}
+stack:
+  UPPER; SEMI; stack {}
 | UPPER  {}
 | {}
 
