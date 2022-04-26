@@ -29,52 +29,42 @@ initialstack:
 
 
 num:
-  DIGIT {}
+  d = DIGIT {lettre(d)}
 
 lettre_maj:
-  UPPER {}
+  l = UPPER {lettre(l)}
 
 (* lettre_min:
   LOWER {};
 *)
 
 suite_maj_nonvide:
-  u = UPPER COMMA s = suite_maj_nonvide {} 
-| UPPER {}
+  l = UPPER; COMMA; s = suite_maj_nonvide {SuiteLettresNonvide(l, s)} 
+| l = UPPER {SuiteLettresNonvide(l)}
 
 suite_min_nonvide:
-  LOWER; COMMA; suite_min_nonvide {}
-| LOWER {}
+  l = LOWER; COMMA; s = suite_min_nonvide {SuiteLettresNonvide(l, s)}
+| l = LOWER {SuiteLettresNonvide(l)}
 
 suite_num_nonvide:
-  DIGIT; COMMA; suite_num_nonvide {}
-| DIGIT {}
-
+  d = DIGIT; COMMA; s = suite_num_nonvide {SuiteLettresNonvide(d, s)}
+| d = DIGIT {SuiteLettresNonvide (d)}
 
 transitions:
   TRANSITIONS; tl = translist {Transitions(tl)}
 
 translist:
-  transition translist {}
-| {}
+  tr = transition; tl = translist {Translist(tr, tl)}
+| {Emptylist}
 
 transition:
-  LPAREN; l1 = lettre_min; COMMA; l2 = lettre_min_ou_vide; COMMA; l3 = lettre_min; COMMA; l3 = lettre_min; COMMA; s = stack; RPAREN {Transition(l1, l2, l3, l4, s)}
+  LPAREN; l1 = num; COMMA; l2 = lettre_min_ou_vide; COMMA; l3 = lettre_maj; COMMA; l4 = num; COMMA; s = stack; RPAREN {Transition(l1, l2, l3, l4, s)}
 
 lettre_min_ou_vide:
-  LOWER {}
-| {}
+  l = LOWER {Some(l)}
+| {None}
 
 stack:
-  UPPER; SEMI; stack {}
-| UPPER  {}
-| {}
-
-
-
-
-
-
-
-
-
+  l = UPPER; SEMI; st = stack {Nonemptystack(l, st)}
+| l = UPPER  {Nonemptystack(l)}
+| {Emptystack}
