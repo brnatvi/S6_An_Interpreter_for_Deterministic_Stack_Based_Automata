@@ -1,13 +1,17 @@
+%{
+open Ast
+%}
+
 %token RPAREN LPAREN SEMI COMMA EOF
 %token INPUTSYMBOLS STACKSYMBOLS STATES INITIALSTATE INITIALSTACK TRANSITIONS
 %token <char> UPPER LOWER 
 %token <int> DIGIT
-%start <void> automate
+%start <Ast.automate> automate
+
 %%
 
 automate:
   d = declarations; tr = transitions; EOF {Automate(d, tr)}
-
 
 declarations:
   p1 = inputsymbols; p2 = stacksymbols; p3 = states; p4 = initialstate; p5 = initialstack {Declarations(p1, p2, p3, p4, p5)}
@@ -26,7 +30,6 @@ initialstate:
 
 initialstack:
   INITIALSTACK; isk = lettre_maj {Initialstack(isk)}
-
 
 num:
   d = DIGIT {lettre(d)}
