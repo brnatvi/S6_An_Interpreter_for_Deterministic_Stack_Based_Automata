@@ -57,8 +57,7 @@ transitions:
   TRANSITIONS; tl = translist {Transitions(tl)}
 
 translist:
-  tr = transition; tl = translist {Translist(tr, tl)}
-| {Emptylist}
+  tl = list(transition) {Translist(tl)}
 
 transition:
   LPAREN; l1 = num; COMMA; l2 = lettre_min_ou_vide; COMMA; l3 = lettre_maj; COMMA; l4 = num; COMMA; s = stack; RPAREN {Transition(l1, l2, l3, l4, s)}

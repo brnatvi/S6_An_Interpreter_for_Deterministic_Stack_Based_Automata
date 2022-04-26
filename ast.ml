@@ -5,7 +5,6 @@ type lettre =
   | UPPER of char
   | LOWER of char
 
-
 (*  — nonemptystack -> lettre | lettre ; nonemptystack *)
 type nonemptystack =
   | Lettre of lettre
