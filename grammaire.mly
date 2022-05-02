@@ -26,32 +26,31 @@ states:
   STATES; s = suite_num_nonvide {States(s)}
 
 initialstate:
-  INITIALSTATE; ist = num {Initialstate(ist)}
+  INITIALSTATE; ist = digit {Initialstate(ist)}
 
 initialstack:
-  INITIALSTACK; isk = lettre_maj {Initialstack(isk)}
+  INITIALSTACK; isk = upper {Initialstack(isk)}
 
-num:
-  d = DIGIT {lettre(d)}
+digit:
+  d = DIGIT {Digit(d)}
 
-lettre_maj:
-  l = UPPER {lettre(l)}
+upper:
+  l = UPPER {Upper(l)}
 
-(* lettre_min:
-  LOWER {};
-*)
+lower:
+  l = LOWER {Lower(l)}
 
 suite_maj_nonvide:
-  l = UPPER; COMMA; s = suite_maj_nonvide {SuiteLettresNonvide(l, s)} 
-| l = UPPER {SuiteLettresNonvide(l)}
+  l = upper; COMMA; s = suite_maj_nonvide {SuiteLettresNonvide(l, s)} 
+| l = upper {Lettre(l)}
 
 suite_min_nonvide:
-  l = LOWER; COMMA; s = suite_min_nonvide {SuiteLettresNonvide(l, s)}
-| l = LOWER {SuiteLettresNonvide(l)}
+  l = lower; COMMA; s = suite_min_nonvide {SuiteLettresNonvide(l, s)}
+| l = lower {Lettre(l)}
 
 suite_num_nonvide:
-  d = DIGIT; COMMA; s = suite_num_nonvide {SuiteLettresNonvide(d, s)}
-| d = DIGIT {SuiteLettresNonvide (d)}
+  d = digit; COMMA; s = suite_num_nonvide {SuiteLettresNonvide(d, s)}
+| d = digit {Lettre(d)}
 
 transitions:
   TRANSITIONS; tl = translist {Transitions(tl)}
@@ -60,13 +59,16 @@ translist:
   tl = list(transition) {Translist(tl)}
 
 transition:
-  LPAREN; l1 = num; COMMA; l2 = lettre_min_ou_vide; COMMA; l3 = lettre_maj; COMMA; l4 = num; COMMA; s = stack; RPAREN {Transition(l1, l2, l3, l4, s)}
+  LPAREN; l1 = digit; COMMA; l2 = lettre_min_ou_vide; COMMA; l3 = upper; COMMA; l4 = digit; COMMA; s = stack; RPAREN {Transition(l1, l2, l3, l4, s)}
 
 lettre_min_ou_vide:
-  l = LOWER {Some(l)}
+  l = lower {Some(l)}
 | {None}
 
+nonemptystack:
+  l = upper; SEMI; st = nonemptystack {Nonemptystack(l, st)}
+| l = upper {Lettre(l)}
+
 stack:
-  l = UPPER; SEMI; st = stack {Nonemptystack(l, st)}
-| l = UPPER  {Nonemptystack(l)}
+  s = nonemptystack {Stack(s)}
 | {Emptystack}

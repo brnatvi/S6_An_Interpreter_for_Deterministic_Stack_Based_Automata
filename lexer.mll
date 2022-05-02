@@ -1,5 +1,5 @@
 {
-open Parser
+  open Grammaire
 }
 
 let white = [' ' '\t']+
@@ -15,14 +15,14 @@ rule lexer = parse
   | '('			          { LPAREN }
   | ";"		            { SEMI }
   | ","		            { COMMA }
-  | "input symbols :" { INPUTSYMBOLS }
-  | "stack symbols :" { STACKSYMBOLS }
-  | "states :"        { STATES }
-  | "initial state :" { INITIALSTATE }
-  | "initial stack :" { INITIALSTACK }
-  | "transitions :"   { TRANSITIONS }
-  | digit             { DIGIT (int_of_string (Lexing.lexeme lexbuf)) }
-  | upper             { UPPER (Lexing.lexeme lexbuf) }
-  | lower             { LOWER (Lexing.lexeme lexbuf) } 
+  | "input symbols:"  { INPUTSYMBOLS }
+  | "stack symbols:"  { STACKSYMBOLS }
+  | "states:"         { STATES }
+  | "initial state:"  { INITIALSTATE }
+  | "initial stack:"  { INITIALSTACK }
+  | "transitions:"    { TRANSITIONS }
+  | digit as d        { DIGIT (Char.code d - Char.code '0') }
+  | upper as c        { UPPER (c) }
+  | lower as c        { LOWER (c) } 
   | eof			          { EOF }
   | _			            { failwith "unexpected character" }

@@ -1,0 +1,7 @@
+grammaire.mli
+grammaire.ml
+*.cmo
+*.cmi
+*.automaton
+*.conflicts
+grammaire
