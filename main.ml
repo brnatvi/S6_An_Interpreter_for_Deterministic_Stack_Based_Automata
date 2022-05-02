@@ -3,8 +3,8 @@ open Prints
 let usage () =
   print_string "Usage: ./grammaire [option] pathfile \n\n";
   print_string "Options: \n";
-  print_string "--reprint     - analyze input file and reprint program\n";
-  print_string "--interpret   - execute input file\n"
+  print_string "--reprint     - compose abstract syntax tree based input file and reprint it\n";
+  print_string "--interpret   - execute automate on word\n"
 
 
 let main () =
