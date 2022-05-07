@@ -73,8 +73,15 @@ let compare_char_lettre (st : lettre) (l: char) : bool =
     | Upper c -> if c = l then true else false
     | Lower c -> if c = l then true else false
 
-
+let compare_two_lettres (s1 : lettre) (s2 : lettre) : bool =
+  match s1, s1 with
+    | Digit i1, Digit i2 -> if i1 = i2 then true else false 
+    | Upper i1, Upper i2 -> if i1 = i2 then true else false 
+    | Lower i1, Lower i2 -> if i1 = i2 then true else false  
+    | _, _ -> raise (Error)
     
+
+
 let get_char (st : lettre) : char =
   match st with
     | Digit i -> raise (Error)
@@ -104,13 +111,13 @@ let execute_automate (a : automate) (word : char list) : unit =
           (match word with
           | [] -> raise (Empty "This is empty word")
           | w::rest_word -> 
-            if (curr_state != depart) then raise(InitialStateCorrupted("Initial state != initial state of first transition"))
+            if (compare_two_lettres (curr_state) (depart))=false then raise(InitialStateCorrupted("Initial state != initial state of first transition"))
               else 
                 (
-                  if (compare_char_lettre (nonterm) (pull_list curr_stack)) then raise(InitialStackCorrupted("Initial stack != initial stack of first transition"))
+                  if (compare_char_lettre (nonterm) (pull_list curr_stack))=false  then raise(InitialStackCorrupted("Initial stack != initial stack of first transition"))
                   else
                     (
-                      if (compare_char_lettre_ou_vide (l_ou_v) (w)) then aux rest_l word curr_state curr_stack      (* continue with same letter and the rest of transitions *)
+                      if (compare_char_lettre_ou_vide (l_ou_v) (w))=false  then aux rest_l word curr_state curr_stack      (* continue with same letter and the rest of transitions *)
                       else
                         (                          
                           let new_stack = (try (append curr_stack (pull_from_stack stack)) with EmptyStackException -> list_without_last curr_stack) in  
