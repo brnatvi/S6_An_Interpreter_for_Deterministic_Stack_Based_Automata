@@ -3,7 +3,7 @@ MENHIR=menhir
 OCAMLC=ocamlc
 OCAMLLEX=ocamllex
 
-SOURCES = ast.ml interpret.ml prints.ml grammaire.ml lexer.ml main.ml 
+SOURCES = ast.ml prints.ml interpret.ml  grammaire.ml lexer.ml main.ml 
 
 OBJECTS = $(SOURCES:.ml=.cmo)
 
@@ -37,7 +37,8 @@ clean:
 	rm -fr grammaire.mli grammaire.ml lexer.ml *.cmo grammaire *.cmi *~ *.automaton *.conflicts
 
 grammaire.cmo: ast.cmo grammaire.cmi
-interpret.cmo: grammaire.cmo
 prints.cmo: grammaire.cmo
+interpret.cmo: grammaire.cmo
+
 lexer.cmo: grammaire.cmo
 main.cmo: grammaire.cmo lexer.cmo interpret.cmo prints.cmo
