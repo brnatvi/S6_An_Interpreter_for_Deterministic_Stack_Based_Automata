@@ -26,16 +26,16 @@ let rec suite_lettres_nonvide_as_string (s: suite_lettres_nonvide) : string =
   | SuiteLettresNonvide (l, li) -> lettre_as_string l ^ "," ^ suite_lettres_nonvide_as_string li
   )
 
-let rec nonemptystack_as_string (n: nonemptystack) : string =
-  (match n with 
-  | Lettre l -> lettre_as_string l
-  | Nonemptystack (l, s) -> lettre_as_string l ^ ";" ^ nonemptystack_as_string s
+let rec rest_stack_as_string (st: stack) : string =
+  (match st with
+  | Emptystack -> ""
+  | Stack (l, s) -> rest_stack_as_string s ^ lettre_as_string l ^ ";"
   )
 
 let stack_as_string (st: stack) : string =
   (match st with
-  | Emptystack -> ""    
-  | Stack (ne) -> nonemptystack_as_string ne  
+  | Emptystack -> ""
+  | Stack (l, s) -> rest_stack_as_string s ^ lettre_as_string l
   )
   
 (* ----------------- Transition and its list as string ------------------------ *)
@@ -59,7 +59,7 @@ let rec translist_as_string (tl: translist) : string =
 
 let transitions_as_string (tr: transitions) : string =
   let (Transitions (tl)) = tr in 
-  "transitions:\n" ^ translist_as_string tl
+  "transitions:\n\n" ^ translist_as_string tl
 
 let initial_stack_as_string (is: initialstack) : string =
   let (Initialstack (s)) = is in 

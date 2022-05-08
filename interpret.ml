@@ -2,6 +2,7 @@ open Ast
 open Prints
 
 exception EmptyTransitionList of string
+exception TransitionNotFound of string
 exception Empty of string
 exception InitialStateCorrupted of string
 exception InitialStackCorrupted of string
@@ -44,7 +45,7 @@ let rec get_last_but_one l =
     | h1::h2::tail -> h2
 (* ------------------------- Service functions ----------------------------- *)
 
-  
+(*
 (* pull last element from nonemptystack *)
 let rec pull_from_nonemptystack (ne: nonemptystack) : char =
   match ne with 
@@ -62,6 +63,7 @@ let pull_from_stack (st: stack) : char =
   | Emptystack -> raise (EmptyStackException)
   | Stack (ne) -> pull_from_nonemptystack ne
 
+*)
 
 let compare_char_lettre_ou_vide (st : lettre_ou_vide) (l: char) : bool =
   match st with  
@@ -97,16 +99,81 @@ let get_char (st : lettre) : char =
     | Upper c -> c
     | Lower c -> c
 
+let rec get_transition_from_state (curr_state : lettre) (c : lettre_ou_vide) (st : stack) (trans_list : transition list) : (transition) =
+  let stack_start = 
+    match st with
+    | Emptystack -> raise EmptyStackException
+    | Stack(l,_) -> l
+  in
+  
+  match trans_list with
+  | [] -> raise (TransitionNotFound "transition not found")
+  | Transition(t_state, t_c, t_stack_start, t_next_state, t_stack)::li 
+      (* je sais qu'on peut faire plus simplement mais je me souoviens pas de la syntaxe *)
+      when(t_state = curr_state && t_c = c && t_stack_start = stack_start)
+      -> Transition(t_state, t_c, t_stack_start, t_next_state, t_stack)
+  | _::li -> get_transition_from_state curr_state c st li
+
+(*
+let inverse_stack (st : stack) : stack =
+  let rec f st1 st2 =
+    match st1 with
+    | Emptystack -> st2
+    | Stack(l,s) -> f s (Stack(l,st2))
+  in
+  f st Emptystack
+*)
+
+(* push all elements of s2 into s1 *)
+let rec push_stack (st : stack) (st2 : stack) : stack =
+  match st2 with
+  | Emptystack -> st
+  | Stack(l,s) -> push_stack (Stack(l,st)) s
+  
+let rec pop_n_push (st : stack) (st2 : stack) : stack =
+  match st with
+  | Emptystack -> raise EmptyStackException
+  | Stack(l, s) -> push_stack s (inverse_stack st2)
+
+let rec go_to_next_state (curr_state : lettre) (word : char list) (st : stack) (trans_list : transition list) : (unit) =
+  match word with
+  | [] -> (
+    match st with
+    | Emptystack -> print_string "mot valide!\n"
+    | _ -> (
+      let Transition(_,_,_,next_state, stack_end) = get_transition_from_state curr_state None st trans_list in
+      go_to_next_state next_state word (pop_n_push st stack_end) trans_list
+    )
+  )
+  | c::w -> (
+    let Transition(_,_,_,next_state, stack_end) = get_transition_from_state curr_state (Some (Lower(c))) st trans_list in
+    go_to_next_state next_state w (pop_n_push st stack_end) trans_list
+  )
+
+
 (* ------------------------- Main function ----------------------------- *)
 
-let execute_automate (a : automate) (word : char list) : unit =  
+let execute_automate (a : automate) (word : char list) : unit =
   let Automate (decl, trs) = a in
   let Declarations (in_symb, st_symb, st, in_state, in_stack) = decl in
   
   let Initialstate (in_st) = in_state in  (* lettre *)
   let Initialstack (in_stck) = in_stack in  (* lettre *)
+  let Transitions (trans_l) = trs in  
 
-  let Transitions (trans_list) = trs in  
+  let initial_stack = Stack(in_stck, Emptystack) in
+
+  let trans_list = 
+    match trans_l with
+    | Emptylist -> raise (EmptyTransitionList "empty transition list")
+    | Translist(tl) -> tl
+  in
+
+  go_to_next_state in_st word initial_stack trans_list
+
+
+  (*
+
   (match trans_list, word with  
   | Emptylist, _ -> raise (EmptyTransitionList ("Automate can't execute any word cause have not any transition"))
   | Translist (liste), word -> 
@@ -151,3 +218,5 @@ let execute_automate (a : automate) (word : char list) : unit =
       )
     in aux liste word in_st [(get_char in_stck)] 0
   )
+
+  *)

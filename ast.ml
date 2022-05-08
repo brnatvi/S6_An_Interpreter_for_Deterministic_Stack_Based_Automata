@@ -6,6 +6,7 @@ type lettre =
   | Upper of char
   | Lower of char
 
+  (*
 (*  — nonemptystack -> lettre | lettre ; nonemptystack *)
 type nonemptystack =
   | Lettre of lettre
@@ -16,10 +17,17 @@ type stack =
   | Emptystack 
   | Stack of nonemptystack
 
+  *)
+
 (* — lettre-ou-vide -> vide | lettre *)
 type lettre_ou_vide =
   | None
   | Some of lettre
+
+(* — stack -> vide | nonemptystack *)
+type stack = 
+  | Emptystack 
+  | Stack of lettre * stack
 
 (* — suitelettres-nonvide -> lettre | lettre , suitelettres-nonvide  *)
 type suite_lettres_nonvide =
@@ -57,3 +65,11 @@ type declarations = Declarations of inputsymbols * stacksymbols * states * initi
 
 (*  — automate -> declarations transitions *)
 type automate = Automate of declarations * transitions
+
+let inverse_stack (st : stack) : stack =
+  let rec f st1 st2 =
+    match st1 with
+    | Emptystack -> st2
+    | Stack(l,s) -> f s (Stack(l,st2))
+  in
+  f st Emptystack

@@ -1,9 +1,8 @@
-
 MENHIR=menhir
 OCAMLC=ocamlc
 OCAMLLEX=ocamllex
 
-SOURCES = ast.ml prints.ml interpret.ml  grammaire.ml lexer.ml main.ml 
+SOURCES = ast.ml prints.ml interpret.ml grammaire.ml lexer.ml main.ml 
 
 OBJECTS = $(SOURCES:.ml=.cmo)
 
@@ -11,9 +10,8 @@ OBJECTS = $(SOURCES:.ml=.cmo)
 
 all: grammaire
 
-grammaire: ast.cmo grammaire.cmi grammaire.cmo lexer.cmo main.cmo
+grammaire: $(OBJECTS)
 	$(OCAMLC) -o $@ $(OBJECTS)
-
 
 %.cmo: %.ml
 	$(OCAMLC) -c $< -o $@
@@ -28,13 +26,12 @@ grammaire: ast.cmo grammaire.cmi grammaire.cmo lexer.cmo main.cmo
 %.ml: %.mll
 	$(OCAMLLEX) $<
 
-
 grammaire.mly: ast.ml
 
 lexer.mll: grammaire.ml
 
 clean:
-	rm -fr grammaire.mli grammaire.ml lexer.ml *.cmo grammaire *.cmi *~ *.automaton *.conflicts
+	rm -fr grammaire grammaire.mli grammaire.ml lexer.ml *.cmo *.cmi *.automaton *.conflicts
 
 grammaire.cmo: ast.cmo grammaire.cmi
 prints.cmo: grammaire.cmo

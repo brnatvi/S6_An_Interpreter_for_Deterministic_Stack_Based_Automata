@@ -66,9 +66,9 @@ lettre_min_ou_vide:
 | {None}
 
 nonemptystack:
-  l = upper; SEMI; st = nonemptystack {Nonemptystack(l, st)}
-| l = upper {Lettre(l)}
+  l = upper; SEMI; st = nonemptystack {Stack(l, st)}
+| l = upper {Stack(l, Emptystack)}
 
 stack:
-  s = nonemptystack {Stack(s)}
+  s = nonemptystack {inverse_stack(s)}
 | {Emptystack}
