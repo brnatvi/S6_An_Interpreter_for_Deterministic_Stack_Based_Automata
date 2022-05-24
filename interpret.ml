@@ -4,10 +4,11 @@ open Prints
 exception EmptyTransitionList of string
 exception TransitionNotFound
 exception Empty of string
-exception InitialStateCorrupted of string
-exception InitialStackCorrupted of string
+exception InitialStateNotInList
+exception InitialStackNotInList
 exception EmptyStackException
 exception NonEmptyFinalStackException
+exception NonDeterministicException
 exception Error
 
 (* ------------------------- Auxilairy functions ----------------------------- *)
@@ -170,9 +171,59 @@ let rec go_to_next_state (curr_state : lettre) (word : char list) (st : stack) (
   )
 )
 
+(* ------------------------- Error check functions ----------------------------- *)
+
+let rec is_in_lettre_list (list : suite_lettres_nonvide) (e : lettre) : (bool) =
+(
+  match list with
+  | SuiteLettresNonvide (l, rest) ->
+    if l = e then true 
+    else is_in_lettre_list rest e
+  | Lettre(l) -> 
+    l = e
+)
+
+let rec is_deterministic (trans_list : transition list) : bool = 
+(
+  let rec f list t =
+  (
+    match list with
+    | [] -> true
+    | t2::rest -> 
+    (
+      let Transition (s, c, st, _, _) = t in
+      let Transition (s2, c2, st2, _, _) = t2 in
+      if (s=s2 && st=st2) then
+        match c,c2 with
+        | None, _ -> (
+          print_string ((transition_as_string t) ^ "\n" ^ (transition_as_string t2) ^ "\n");
+          false)
+        | _, None -> (
+          print_string ((transition_as_string t) ^ "\n" ^ (transition_as_string t2) ^ "\n");
+          false)
+        | Some(x), Some(y) when x=y -> (
+          print_string ((transition_as_string t) ^ "\n" ^ (transition_as_string t2) ^ "\n");
+          false)
+        | _ -> f rest t
+      else 
+        f rest t
+    )
+  )
+  in
+  match trans_list with
+  | [] -> true
+  | t::list -> 
+  (
+    if not (f list t) then false
+    else is_deterministic list
+  )
+)
+
 (* ------------------------- Main function ----------------------------- *)
 
 let execute_automate (a : automate) (word : char list) : unit =
+
+  (* initialisation *)
   let Automate (decl, trs) = a in
   let Declarations (in_symb, st_symb, st, in_state, in_stack) = decl in
   
@@ -188,6 +239,23 @@ let execute_automate (a : automate) (word : char list) : unit =
     | Translist(tl) -> tl
   in
 
+  let States(states) = st in
+  let Stacksymbols(stack_symbols) = st_symb in
+
+  (* verifications de la bonne formation de l'automate *)
+  if not (is_in_lettre_list states in_st)
+  then raise InitialStateNotInList
+  else
+
+  if not (is_in_lettre_list stack_symbols in_stck)
+  then raise InitialStackNotInList
+  else
+
+  if not (is_deterministic trans_list)
+  then raise NonDeterministicException
+  else
+
+  (* execution de l'automate *)
   try
     go_to_next_state in_st word initial_stack trans_list
   with

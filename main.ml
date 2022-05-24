@@ -51,7 +51,18 @@ let main () =
               in
           
             (match ast with
-              | Some a -> Interpret.execute_automate a (word_to_list word)      
+              | Some a -> 
+              (
+                try Interpret.execute_automate a (word_to_list word)
+                with
+                | InitialStateNotInList -> 
+                  print_string "automate non valide,\nl'état initial n'est pas dans la liste\n"
+                | InitialStackNotInList -> 
+                  print_string "automate non valide,\nle symbole de pile initial n'est pas dans la liste\n"
+                | NonDeterministicException -> 
+                  print_string "automate non valide,\ntransitions non déterministes\n"
+                | _ -> print_string "erreur\n"
+              )
               | None -> ()
             )
           )
