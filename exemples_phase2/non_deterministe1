@@ -1,0 +1,45 @@
+input symbols: a, b
+stack symbols: X, Z
+states: 0, 1, 2, 3
+initial state: 0
+initial stack: Z
+
+program:
+  case state of
+  
+    0:
+    begin
+      case top of 
+        Z: 
+        begin
+          case next of
+            a: push X change 1
+            b: push X change 2
+        end
+        Z: change 3
+    end
+
+    1: 
+    begin
+      case top of
+        X: 
+        begin 
+          case next of 
+            a: push X 
+            b: pop
+        end
+        Z: change 0
+    end
+
+    2: 
+    begin
+      case top of
+        X: 
+        begin 
+          case next of 
+            a: pop
+            b: push X 
+        end
+        Z: change 0
+    end
+    3: begin case top of Z: pop end
