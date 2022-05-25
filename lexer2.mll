@@ -14,8 +14,6 @@ let case_lower = lower":"
 rule lexer = parse
   | white             { lexer lexbuf }
   | newline           { Lexing.new_line lexbuf; lexer lexbuf }
-  | ')'			          { RPAREN }
-  | '('			          { LPAREN }
   | ","		            { COMMA }
   | "input symbols:"  { INPUTSYMBOLS }
   | "stack symbols:"  { STACKSYMBOLS }
@@ -34,6 +32,8 @@ rule lexer = parse
   | "next"            { NEXT }
   | "case"            { CASE }
   | "of"              { OF }
+  | "pop"             { POP }
+  | "push"            { PUSH }
   | "change"          { CHANGE }
   | "reject"          { REJECT }
   | "begin"           { BEGIN }

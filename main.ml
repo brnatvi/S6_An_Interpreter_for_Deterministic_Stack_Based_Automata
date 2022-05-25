@@ -35,7 +35,7 @@ let exec_automate fun_grammaire fun_lexer fun_interpret file word =
         print_string "automate non valide,\nle symbole de pile initial n'est pas dans la liste\n"
       | NonDeterministicException -> 
         print_string "automate non valide,\ntransitions non déterministes\n"
-      | _ -> print_string "erreur\n"
+      | e -> (print_string (Printexc.to_string e); print_string "\n")
     )
     | None -> ()
   )
@@ -55,7 +55,7 @@ let main () =
                 | msg -> (
                   print_string (Printexc.to_string msg); print_string "\n";
                   let pos = Lexing.lexeme_start_p lexbuf in
-                  Printf.fprintf stdout "At line %d, offset %d\n%!" pos.pos_lnum (pos.pos_cnum - pos.pos_bol);
+                  Printf.fprintf stdout "At line %d, offset %d\n" pos.pos_lnum (pos.pos_cnum - pos.pos_bol);
                   None
                 )
               in

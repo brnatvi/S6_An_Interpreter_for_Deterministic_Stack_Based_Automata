@@ -2,7 +2,7 @@
 open Ast2
 %}
 
-%token RPAREN LPAREN COMMA EOF BEGIN END POP PUSH CHANGE REJECT STATE TOP NEXT CASE OF
+%token  COMMA EOF BEGIN END POP PUSH CHANGE REJECT STATE TOP NEXT CASE OF
 %token INPUTSYMBOLS STACKSYMBOLS STATES INITIALSTATE INITIALSTACK PROGRAM
 %token <char> UPPER LOWER CASE_UPPER CASE_LOWER
 %token <int> DIGIT CASE_DIGIT
@@ -85,6 +85,6 @@ instruction:
 | BEGIN; sc = switch_case; END {SwitchCase(sc)}
 
 first_instruction:
-  s = switch_case_state {SwitchCase(s)}
+  PROGRAM; s = switch_case_state {SwitchCase(s)}
 
 
