@@ -1,12 +1,12 @@
 %{
-open Ast
+open Ast2
 %}
 
 %token RPAREN LPAREN COMMA EOF BEGIN END POP PUSH CHANGE REJECT STATE TOP NEXT CASE OF
 %token INPUTSYMBOLS STACKSYMBOLS STATES INITIALSTATE INITIALSTACK PROGRAM
 %token <char> UPPER LOWER CASE_UPPER CASE_LOWER
 %token <int> DIGIT CASE_DIGIT
-%start <Ast.automate> automate
+%start <Ast2.automate> automate
 
 %%
 
@@ -81,7 +81,7 @@ instruction:
 | POP {Pop}
 | PUSH; c = upper {Push(c)}
 | REJECT {Reject}
-| CHANGE; d = digit {Change(c)}
+| CHANGE; d = digit {Change(d)}
 | BEGIN; sc = switch_case; END {SwitchCase(sc)}
 
 first_instruction:

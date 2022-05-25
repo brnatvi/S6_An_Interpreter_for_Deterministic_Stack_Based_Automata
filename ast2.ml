@@ -29,13 +29,6 @@ type inputsymbols = Inputsymbols of suite_lettres_nonvide
 (* — declarations -> inputsymbols stacksymbols states initialstate initialstack *)
 type declarations = Declarations of inputsymbols * stacksymbols * states * initialstate * initialstack
 
-type case = Case of lettre * instruction
-
-type switch_case =
-  | SwitchCaseState of case list
-  | SwitchCaseNext of case list
-  | SwitchCaseTop of case list
-
 type instruction = 
   | Pop
   | Push of lettre
@@ -44,6 +37,13 @@ type instruction =
   | PopAndChange of lettre
   | PushAndChange of lettre * lettre (* symbole pile * nouvel état *)
   | SwitchCase of switch_case
+
+and switch_case =
+  | SwitchCaseState of case list
+  | SwitchCaseNext of case list
+  | SwitchCaseTop of case list
+  
+and case = Case of lettre * instruction
 
 (*  — automate -> declarations * première instruction *)
 type automate = Automate of declarations * instruction

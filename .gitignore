@@ -1,5 +1,7 @@
 grammaire.mli
 grammaire.ml
+grammaire2.mli
+grammaire2.ml
 *.cmo
 *.cmi
 *.automaton
