@@ -6,16 +6,6 @@ type lettre =
   | Upper of char
   | Lower of char
 
-(* — lettre-ou-vide -> vide | lettre *)
-type lettre_ou_vide =
-  | None
-  | Some of lettre
-
-(* — stack -> vide | nonemptystack *)
-type stack = 
-  | Emptystack 
-  | Stack of lettre * stack
-
 (* — suitelettres-nonvide -> lettre | lettre , suitelettres-nonvide  *)
 type suite_lettres_nonvide =
   | Lettre of lettre
@@ -39,10 +29,25 @@ type inputsymbols = Inputsymbols of suite_lettres_nonvide
 (* — declarations -> inputsymbols stacksymbols states initialstate initialstack *)
 type declarations = Declarations of inputsymbols * stacksymbols * states * initialstate * initialstack
 
-(*  — automate -> declarations instructions *)
-type automate = Automate of declarations * instructions
+type case = Case of lettre * instruction
 
-type instructions = string (* TODO *)
+type switch_case =
+  | SwitchCaseState of case list
+  | SwitchCaseNext of case list
+  | SwitchCaseTop of case list
+
+type instruction = 
+  | Pop
+  | Push of lettre
+  | Reject
+  | Change of lettre
+  | PopAndChange of lettre
+  | PushAndChange of lettre * lettre (* symbole pile * nouvel état *)
+  | SwitchCase of switch_case
+
+(*  — automate -> declarations * première instruction *)
+type automate = Automate of declarations * instruction
+
 
 (*
 let inverse_stack (st : stack) : stack =
