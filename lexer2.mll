@@ -24,9 +24,7 @@ rule lexer = parse
   | digit as d        { DIGIT (int_of_string d) }
   | upper as c        { UPPER (c) }
   | lower as c        { LOWER (c) }
-  | digit as d":"     { CASE_DIGIT (int_of_string d) }
-  | upper as c":"     { CASE_UPPER (c) }
-  | lower as c":"     { CASE_LOWER (c) }
+  | ":"               { COLON }
   | "state"           { STATE }
   | "top"             { TOP }
   | "next"            { NEXT }

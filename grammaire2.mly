@@ -2,10 +2,10 @@
 open Ast2
 %}
 
-%token  COMMA EOF BEGIN END POP PUSH CHANGE REJECT STATE TOP NEXT CASE OF
+%token COMMA COLON EOF BEGIN END POP PUSH CHANGE REJECT STATE TOP NEXT CASE OF
 %token INPUTSYMBOLS STACKSYMBOLS STATES INITIALSTATE INITIALSTACK PROGRAM
-%token <char> UPPER LOWER CASE_UPPER CASE_LOWER
-%token <int> DIGIT CASE_DIGIT
+%token <char> UPPER LOWER
+%token <int> DIGIT
 %start <Ast2.automate> automate
 
 %%
@@ -52,19 +52,12 @@ suite_num_nonvide:
   d = digit; COMMA; s = suite_num_nonvide {SuiteLettresNonvide(d, s)}
 | d = digit {Lettre(d)}
 
-case_digit:
-  d = CASE_DIGIT {Digit(d)}
-case_lower:
-  c = CASE_LOWER {Lower(c)}
-case_upper:
-  c = CASE_UPPER {Upper(c)}
-
 case_state:
-  d = case_digit; i = instruction {Case(d, i)}
+  d = digit; COLON; i = instruction {Case(d, i)}
 case_next:
-  c = case_lower; i = instruction {Case(c, i)}
+  c = lower; COLON; i = instruction {Case(c, i)}
 case_top:
-  c = case_upper; i = instruction {Case(c, i)}
+  c = upper; COLON; i = instruction {Case(c, i)}
 
 switch_case_state:
   CASE; STATE; OF; li = list(case_state) {SwitchCaseState(li)}
