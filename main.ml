@@ -4,8 +4,8 @@ open Interpret
 let usage () =
   print_string "Usage: ./grammaire [option] file [word] \n\n";
   print_string "Options: \n";
-  print_string "--reprint     - compose abstract syntax tree based input file and reprint it\n";
-  print_string "--interpret   - execute automate based input file on word\n"
+  print_string "--reprint     - compose abstract syntax tree based input file and reprint it\n"
+  (*print_string "--interpret   - execute automaton based input file on word\n"*)
 
 
 let main () =
@@ -33,7 +33,7 @@ let main () =
             )
           )
 
-        | [|_;"--interpret";file;word|] -> 
+        | [|_;file;word|] -> 
           (
             let ch = open_in file in
 

@@ -21,17 +21,6 @@ type suite_lettres_nonvide =
   | Lettre of lettre
   | SuiteLettresNonvide of lettre * suite_lettres_nonvide
 
-(* — transition -> ( lettre , lettre-ou-vide , lettre , lettre , stack ) *)
-type transition = Transition of lettre * lettre_ou_vide * lettre * lettre * stack
-
-(* translist -> vide | transition translist *)
-type translist = 
-| Emptylist
-| Translist of transition list
-
-(* — transitions -> transitions: translist *)
-type transitions = Transitions of translist
-
 (* — initialstack -> initial stack symbol: lettre *) 
 type initialstack = Initialstack of lettre
  
@@ -50,9 +39,12 @@ type inputsymbols = Inputsymbols of suite_lettres_nonvide
 (* — declarations -> inputsymbols stacksymbols states initialstate initialstack *)
 type declarations = Declarations of inputsymbols * stacksymbols * states * initialstate * initialstack
 
-(*  — automate -> declarations transitions *)
-type automate = Automate of declarations * transitions
+(*  — automate -> declarations instructions *)
+type automate = Automate of declarations * instructions
 
+type instructions = string (* TODO *)
+
+(*
 let inverse_stack (st : stack) : stack =
   let rec f st1 st2 =
     match st1 with
@@ -60,3 +52,4 @@ let inverse_stack (st : stack) : stack =
     | Stack(l,s) -> f s (Stack(l,st2))
   in
   f st Emptystack
+*)
