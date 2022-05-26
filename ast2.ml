@@ -38,16 +38,15 @@ type instruction =
   | PushAndChange of lettre * lettre (* symbole pile * nouvel état *)
   | SwitchCase of switch_case
 
-and switch_case =
+  and switch_case =
   | SwitchCaseState of case list
   | SwitchCaseNext of case list
-  | SwitchCaseTop of case list
-  
-and case = Case of lettre * instruction
+  | SwitchCaseTop of case list  
+
+  and case = Case of lettre * instruction
 
 (*  — automate -> declarations * première instruction *)
-type automate = Automate of declarations * instruction
-
+type automate = Automate of (declarations * instruction)
 
 (*
 let inverse_stack (st : stack) : stack =
@@ -58,3 +57,27 @@ let inverse_stack (st : stack) : stack =
   in
   f st Emptystack
 *)
+
+
+
+
+(*  Example of Program
+
+
+SwitchCaseState ([ Case ('1', SwitchCaseNext([ Case('a', Push('a')) ;
+                                               Case('b', Push('b')) ; 
+                                               Case('c', Push('c'))  
+                                            ])
+                        )
+                    Case('2', SwitchCaseTop([ Case('A', SwitchCaseNext([ Case('a', 'Pop') ])) ;
+                                              Case('B', SwitchCaseNext([ Case('b', 'Pop') ])) ;
+                                              Case('Z', 'Pop')
+                                            ])
+                        )
+                ])
+*)
+
+         
+
+
+  

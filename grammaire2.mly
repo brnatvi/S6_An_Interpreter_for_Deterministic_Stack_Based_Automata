@@ -64,13 +64,11 @@ switch_case_state:
 
 switch_case:
   CASE; NEXT; OF; li = list(case_next) {SwitchCaseNext(li)}
-| CASE; TOP; OF; li = list(case_top) {SwitchCaseNext(li)}
+| CASE; TOP; OF; li = list(case_top) {SwitchCaseTop(li)}
   
 instruction:
   POP; CHANGE; d = digit {PopAndChange(d)}
-| CHANGE; d = digit; POP {PopAndChange(d)}
 | PUSH; c = upper; CHANGE; d = digit {PushAndChange(c,d)}
-| CHANGE; d = digit; PUSH; c = upper {PushAndChange(c,d)}
 | POP {Pop}
 | PUSH; c = upper {Push(c)}
 | REJECT {Reject}
