@@ -79,5 +79,3 @@ instruction:
 
 first_instruction:
   PROGRAM; s = switch_case_state {SwitchCase(s)}
-
-

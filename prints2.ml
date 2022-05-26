@@ -11,7 +11,7 @@ let lettre_ou_vide_as_string c =
   | Some c -> lettre_as_string c
   )
 
-(* Generic function: return generic list as string with delim as delimiter, f = function as_string for elements of list *)
+(* GENERIC: list as string with offset respected; delim = delimiter, f = function as_string for elements of list *)
 let rec list_as_string list func delim offs =
   (match list with
   | [] -> ""
@@ -25,9 +25,7 @@ let rec suite_lettres_nonvide_as_string (s: suite_lettres_nonvide) : string =
   | SuiteLettresNonvide (l, li) -> lettre_as_string l ^ "," ^ suite_lettres_nonvide_as_string li
   )
 
-
-(* ----------------- Parts of definition as string ------------------------ *)
-
+(* ----------------- Definition as string ------------------------ *)
 
 let initial_stack_as_string (is: initialstack) : string =
   let (Initialstack (s)) = is in 
@@ -55,40 +53,17 @@ let declarations_as_string (d: declarations) : string =
     stacksymbols_as_string (stsymb) ^ "\n" ^
     states_as_string (st) ^ "\n" ^
     initial_state_as_string (inte) ^ "\n" ^
-    initial_stack_as_string (inck) ^ "\n\n"
+    initial_stack_as_string (inck) ^ "\n\n" 
 
-(* ----------------- Parts of definition as string ------------------------ *)
+(* -------------- Part of instruction as string ---------------- *)
 
-let initial_stack_as_string (is: initialstack) : string =
-  let (Initialstack (s)) = is in 
-  "initial stack: " ^ lettre_as_string s
-
-let initial_state_as_string (is: initialstate) : string =
-  let (Initialstate (s)) = is in 
-  "initial state: " ^ lettre_as_string s
-
-let states_as_string (st: states) : string =
-  let (States (s)) = st in 
-  "states: " ^ suite_lettres_nonvide_as_string s
-
-let stacksymbols_as_string (st: stacksymbols) : string =
-  let (Stacksymbols (s)) = st in 
-  "stack symbols: " ^ suite_lettres_nonvide_as_string s
-
-let inputsymbols_as_string (st: inputsymbols) : string =
-  let (Inputsymbols (s)) = st in 
-  "input symbols: " ^ suite_lettres_nonvide_as_string s
-
- 
-
-  (* -------------- Prints for etape 3 ---------------- *)
-
+(* Offset as string, offset valie = 3 white spaces *)
 let rec offset_as_string (depth:int) : string =
     match depth with
     | 0 -> ""
     | _ -> "   " ^ offset_as_string (depth - 1)
   
-  
+(* Instruction as string with offsets respected *)  
 let rec instruction_as_string (i: instruction) (d: int) : string =   
   let rec case_as_string (c: case) (d: int)  : string =
     let Case(l, instr) = c in
@@ -109,7 +84,7 @@ let rec instruction_as_string (i: instruction) (d: int) : string =
           (
             match case_list with
             | [] -> ""
-            | h::tail -> offset_as_string (d+1)^"case state of\n" ^ case_as_string h (d+1) ^ (list_as_string tail case_as_string "" (d+1))
+            | h::tail -> offset_as_string (d+1)^"case state of\n" ^ case_as_string h (d) ^ (list_as_string tail case_as_string "" (d+1))
           )
         
         | SwitchCaseNext (case_list) -> 
@@ -132,4 +107,4 @@ let rec instruction_as_string (i: instruction) (d: int) : string =
 
 let automate_as_string_v2 (a: automate) : string =
   let Automate (d, inst) = a in 
-    declarations_as_string d ^ "program:\n" ^ instruction_as_string inst 1
+    declarations_as_string d ^ "program:\n" ^ instruction_as_string inst 0

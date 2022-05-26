@@ -47,33 +47,3 @@ type instruction =
 
 (*  — automate -> declarations * première instruction *)
 type automate = Automate of (declarations * instruction)
-
-(*
-let inverse_stack (st : stack) : stack =
-  let rec f st1 st2 =
-    match st1 with
-    | Emptystack -> st2
-    | Stack(l,s) -> f s (Stack(l,st2))
-  in
-  f st Emptystack
-*)
-
-
-
-
-(*  Example of Program
-
-
-SwitchCaseState ([ Case ('1', SwitchCaseNext([ Case('a', Push('a')) ;
-                                               Case('b', Push('b')) ; 
-                                               Case('c', Push('c'))  
-                                            ])
-                        )
-                    Case('2', SwitchCaseTop([ Case('A', SwitchCaseNext([ Case('a', 'Pop') ])) ;
-                                              Case('B', SwitchCaseNext([ Case('b', 'Pop') ])) ;
-                                              Case('Z', 'Pop')
-                                            ])
-                        )
-                ])
-*)
-

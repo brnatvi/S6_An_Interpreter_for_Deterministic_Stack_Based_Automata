@@ -29,9 +29,9 @@ let pop_from_stack (st: stack) : stack =
   | _ :: tail -> tail
 )
 
-
 (* ------------------------- Auxilary functions ------------------------------- *)
 
+(* get tail os list *)
 let list_without_first word  =
 (
   match word with
@@ -39,6 +39,7 @@ let list_without_first word  =
   | _::tail -> tail
 )
 
+(* GENERIC: find instruction according attribute - to make all switch cases *)
 let rec get_instr_from_switch_case (case_list : case list) (attribute:lettre) : (instruction option) = 
 (
   match case_list with
@@ -47,6 +48,9 @@ let rec get_instr_from_switch_case (case_list : case list) (attribute:lettre) : 
   | _::tail -> get_instr_from_switch_case tail attribute
 )
 
+(* ------------------------- Processing function ----------------------------- *)
+
+(* execution of instruction *)
 let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) (cur_stack: stack) (cur_state: lettre) (cur_word: char list) : unit =
 (
   match cur_instr with
@@ -62,7 +66,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     | SwitchCaseState (case_list) -> 
     (
       match cur_stack, cur_word with
-      | [],[] -> print_string "This word is accepted by automate !\n"
+      | [],[] -> print_string "This word is accepted by automaton !\n"
       | _,_ -> 
       (
         let instr = get_instr_from_switch_case case_list cur_state in
@@ -75,7 +79,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     | SwitchCaseNext (case_list) ->
     (
       match cur_stack, cur_word with
-      | [],[] -> print_string "This word is accepted by automate !\n"
+      | [],[] -> print_string "This word is accepted by automaton !\n"
       | _,[] -> raise NonEmptyFinalStackException2
       | _,c::rest_word -> 
       (
@@ -88,7 +92,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     )
     | SwitchCaseTop (case_list) -> (
       match cur_stack, cur_word with
-      | [],[] -> print_string "This word is accepted by automate !\n"
+      | [],[] -> print_string "This word is accepted by automaton !\n"
       | [],_ -> raise EmptyStackException2
       | t::rest_stack,_ -> (
         let instr = get_instr_from_switch_case case_list t in
@@ -103,6 +107,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
 
 (* ------------------------- Error check functions ----------------------------- *)
 
+(* check if init_state is in list of states*)
 let rec is_in_lettre_list (list : suite_lettres_nonvide) (e : lettre) : (bool) =
 (
   match list with
@@ -113,6 +118,7 @@ let rec is_in_lettre_list (list : suite_lettres_nonvide) (e : lettre) : (bool) =
     l = e
 )
 
+(* check if autonaton is not deterministic *)
 let rec is_redundant (case_list : case list) : bool =
 (
   let rec is_in_case_list l list = 
@@ -141,21 +147,19 @@ and is_not_deterministic (instr : instruction) : bool =
   | _ -> false
 )
 
-
 (* ------------------------- Main function ----------------------------- *)
 
 let execute_automate (a : automate) (word : char list) : unit =
- (* failwith "todo"  *)
-  (* initialisation *)
+
+  (* declarations *)
   let Automate (decl, instr) = a in
 
-  (* dectaration part*)
   let Declarations (in_symb, st_symb, st, in_st, in_stck) = decl in
 
-  let Initialstate (init_state) = in_st in  (* initial state initialisation (init_state) *)
+  let Initialstate (init_state) = in_st in       (* initial state initialisation *)
 
   let Initialstack (in_stack) = in_stck in  
-  let init_stack = [in_stack] in                 (* stack initialisation (stack) *)
+  let init_stack = [in_stack] in                 (* stack initialisation *)
 
   let States(states) = st in
   let Stacksymbols(stack_symbols) = st_symb in
@@ -175,10 +179,7 @@ let execute_automate (a : automate) (word : char list) : unit =
   then raise NonDeterministicException
   else
 
-  (* instruction part*)
- (* let SwitchCase(switch_case) = instr in 
-  let SwitchCaseState(switch_case_state) = switch_case in *)
-
+  (* execution of automaton *)
   try 
     execute_instruction instr instr init_stack init_state word
   with

@@ -17,70 +17,7 @@ exception Error
 let word_to_list (word : string) : char list =
   List.init (String.length word) (String.get word)
 
-(* GENERIC: append element to list and return obtained list *)
-let rec append l i =
-(
-  match l with
-  | [] -> [i]
-  | h::tail -> h::(append tail i)
-)
-
-(* GENERIC: pull last element from list *)
-let rec pull_list l =
-(
-  match l with
-  | [] -> raise (Empty "There is nothing to pull cause list is empty")
-  | [i] -> i
-  | h::tail -> pull_list tail
-)
-
-(* ------------------------- Service functions ----------------------------- *)
-
-let compare_char_lettre_ou_vide (st : lettre_ou_vide) (l: char) : bool = 
-(
-  match st with  
-    | None -> false
-    | Some letter -> 
-      (
-        match letter with
-        | Digit i -> raise (Error)
-        | Upper c -> if c = l then true else false
-        | Lower c -> if c = l then true else false
-      )
-)
-
-let compare_char_lettre (st : lettre) (l: char) : bool = 
-(
-  match st with
-    | Digit i -> raise (Error)
-    | Upper c -> if c = l then true else false
-    | Lower c -> if c = l then true else false
-)
-
-let compare_two_lettres (s1 : lettre) (s2 : lettre) : bool =
-(
-  match s1, s1 with
-    | Digit i1, Digit i2 -> if i1 = i2 then true else false 
-    | Upper i1, Upper i2 -> if i1 = i2 then true else false 
-    | Lower i1, Lower i2 -> if i1 = i2 then true else false  
-    | _, _ -> false
-)
-    
-let rec print_list (l: char list) : unit =
-(
-  match l with
-  | [] -> print_char ']'
-  | h::tail -> print_char '['; print_char h; print_char ' '; print_list tail
-)
-
-let get_char (st : lettre) : char =
-(
-  match st with
-    | Digit i -> raise (Error)
-    | Upper c -> c
-    | Lower c -> c
-)
-
+(* return transition according state *)
 let rec get_transition_from_state (curr_state : lettre) (c : lettre_ou_vide) (st : stack) (trans_list : transition list) : (transition option) =
 (
   let stack_start = 
@@ -112,13 +49,14 @@ let rec pop_n_push (st : stack) (st2 : stack) : stack =
   | Stack(l, s) -> push_stack s (inverse_stack st2)
 )
 
+(* traversal by list of transitions*)
 let rec go_to_next_state (curr_state : lettre) (word : char list) (st : stack) (trans_list : transition list) : (unit) =
 (
   match word with
   | [] -> 
   (
     match st with
-    | Emptystack -> print_string "This word is accepted by automate !\n"
+    | Emptystack -> print_string "This word is accepted by automaton !\n"
     | _ -> 
     (
       let trans_opt = get_transition_from_state curr_state None st trans_list in
@@ -152,6 +90,7 @@ let rec go_to_next_state (curr_state : lettre) (word : char list) (st : stack) (
 
 (* ------------------------- Error check functions ----------------------------- *)
 
+(* check if init_state is in list of states*)
 let rec is_in_lettre_list (list : suite_lettres_nonvide) (e : lettre) : (bool) =
 (
   match list with
@@ -162,6 +101,7 @@ let rec is_in_lettre_list (list : suite_lettres_nonvide) (e : lettre) : (bool) =
     l = e
 )
 
+(* check if autonaton is not deterministic *)
 let rec is_deterministic (trans_list : transition list) : bool = 
 (
   let rec f list t =
@@ -202,12 +142,12 @@ let rec is_deterministic (trans_list : transition list) : bool =
 
 let execute_automate (a : automate) (word : char list) : unit =
 
-  (* initialisation *)
+  (* declarations *)
   let Automate (decl, trs) = a in
   let Declarations (in_symb, st_symb, st, in_state, in_stack) = decl in
   
-  let Initialstate (in_st) = in_state in  (* lettre *)
-  let Initialstack (in_stck) = in_stack in  (* lettre *)
+  let Initialstate (in_st) = in_state in      (* lettre *)
+  let Initialstack (in_stck) = in_stack in    (* lettre *)
   let Transitions (trans_l) = trs in  
 
   let initial_stack = Stack(in_stck, Emptystack) in
@@ -234,7 +174,7 @@ let execute_automate (a : automate) (word : char list) : unit =
   then raise NonDeterministicException
   else
 
-  (* execution de l'automate *)
+  (* execution of automaton *)
   try
     go_to_next_state in_st word initial_stack trans_list
   with
@@ -242,4 +182,3 @@ let execute_automate (a : automate) (word : char list) : unit =
     | EmptyStackException -> print_string "Word not accepted,\nstack is empty, but input isn't.\n"
     | TransitionNotFound -> print_string "Word not accepted,\nno transition can be applied.\n"
     | _ -> print_string "Error\n"
-
