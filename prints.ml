@@ -89,7 +89,8 @@ let declarations_as_string (d: declarations) : string =
   initial_state_as_string (inte) ^ "\n" ^
   initial_stack_as_string (inck) ^ "\n\n"
 
+  
 (* ----------------- Automat as string ------------------------ *) 
-let automate_as_string (a: automate) : string =
-  let (Automate (d, tr)) = a in 
+let automate_as_string_v1 (a: automate) : string =
+  let Automate (d, tr) = a in 
   declarations_as_string d ^ transitions_as_string tr ^ "\n"
