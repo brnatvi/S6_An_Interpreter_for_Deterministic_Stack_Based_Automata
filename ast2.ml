@@ -11,8 +11,6 @@ type suite_lettres_nonvide =
   | Lettre of lettre
   | SuiteLettresNonvide of lettre * suite_lettres_nonvide
 
-type stack = Stack of lettre list
-
 (* — initialstack -> initial stack symbol: lettre *) 
 type initialstack = Initialstack of lettre
  

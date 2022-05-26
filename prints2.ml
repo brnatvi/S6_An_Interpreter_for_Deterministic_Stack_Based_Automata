@@ -25,7 +25,7 @@ let rec suite_lettres_nonvide_as_string (s: suite_lettres_nonvide) : string =
   | SuiteLettresNonvide (l, li) -> lettre_as_string l ^ "," ^ suite_lettres_nonvide_as_string li
   )
 
-let rec rest_stack_as_string (st: stack) : string =
+(*let rec rest_stack_as_string (st: stack) : string =
   let Stack stak = st in
   (match stak with
   | [] -> ""
@@ -38,6 +38,7 @@ let stack_as_string (st: stack) : string =
     | [] -> ""
     | h :: tail -> rest_stack_as_string (Stack(tail)) ^ lettre_as_string h
 )
+*)
 
 
 (* ----------------- Parts of definition as string ------------------------ *)
