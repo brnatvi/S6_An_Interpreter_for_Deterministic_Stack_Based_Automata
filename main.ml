@@ -4,7 +4,10 @@ open Interpret
 let usage () =
   print_string "Usage: ./grammaire [option] file [word] \n\n";
   print_string "Options: \n";
-  print_string "--reprint     - compose abstract syntax tree based input file and reprint it\n"
+  print_string "  -v1         - Use first automaton language\n";
+  print_string "  -v2         - Use second automaton language (default)\n";
+  print_string "  --reprint   - compose abstract syntax tree based on input file and reprint it\n";
+  print_string "                works only for v1 automatons\n"
   (*print_string "--interpret   - execute automaton based input file on word\n"*)
 
 let exec_automate fun_grammaire fun_lexer fun_interpret file word =
@@ -66,7 +69,7 @@ let main () =
             )
           )
 
-        | [|_;"-v2";file;word|] ->
+        | [|_;"-v2";file;word|] | [|_;file;word|] ->
           exec_automate Grammaire2.automate Lexer2.lexer Interpret2.execute_automate file word
 
         | [|_;"-v1";file;word|] ->
