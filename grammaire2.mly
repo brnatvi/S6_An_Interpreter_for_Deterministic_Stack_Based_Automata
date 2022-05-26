@@ -71,7 +71,7 @@ switch_case_state:
 
 switch_case:
   CASE; NEXT; OF; li = list(case_next) {SwitchCaseNext(li)}
-| CASE; TOP; OF; li = list(case_top) {SwitchCaseNext(li)}
+| CASE; TOP; OF; li = list(case_top) {SwitchCaseTop(li)}
   
 instruction:
   POP; CHANGE; d = digit {PopAndChange(d)}
