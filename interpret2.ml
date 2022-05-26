@@ -1,8 +1,10 @@
 open Ast2
 
-exception EmptyStackException
+exception InitialStateNotInList
+exception InitialStackNotInList
+exception NonDeterministicException
+
 exception EmptyList
-exception InitStateNotFirst
 
 exception EmptyStackException2
 exception NonEmptyFinalStackException2
@@ -31,17 +33,19 @@ let pop_from_stack (st: stack) : stack =
 (* ------------------------- Auxilary functions ------------------------------- *)
 
 let list_without_first word  =
-  (
-    match word with
-    | [] -> raise EmptyList
-    | _::tail -> tail
-  )
+(
+  match word with
+  | [] -> raise EmptyList
+  | _::tail -> tail
+)
 
 let rec get_instr_from_switch_case (case_list : case list) (attribute:lettre) : (instruction option) = 
+(
   match case_list with
   | [] -> None
   | Case(l,inst)::_ when l = attribute -> Some(inst)
   | _::tail -> get_instr_from_switch_case tail attribute
+)
 
 let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) (cur_stack: stack) (cur_state: lettre) (cur_word: char list) : unit =
 (
@@ -58,7 +62,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     | SwitchCaseState (case_list) -> 
     (
       match cur_stack, cur_word with
-      | [],[] -> print_string "mot valide!\n"
+      | [],[] -> print_string "Word is valid!\n"
       | _,_ -> 
       (
         let instr = get_instr_from_switch_case case_list cur_state in
@@ -71,7 +75,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     | SwitchCaseNext (case_list) ->
     (
       match cur_stack, cur_word with
-      | [],[] -> print_string "mot valide!\n"
+      | [],[] -> print_string "Word is valid!\n"
       | _,[] -> raise NonEmptyFinalStackException2
       | _,c::rest_word -> 
       (
@@ -84,7 +88,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     )
     | SwitchCaseTop (case_list) -> (
       match cur_stack, cur_word with
-      | [],[] -> print_string "mot valide!\n"
+      | [],[] -> print_string "Word is valid!\n"
       | [],_ -> raise EmptyStackException2
       | t::rest_stack,_ -> (
         let instr = get_instr_from_switch_case case_list t in
@@ -96,6 +100,47 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     )
   )
 )
+
+(* ------------------------- Error check functions ----------------------------- *)
+
+let rec is_in_lettre_list (list : suite_lettres_nonvide) (e : lettre) : (bool) =
+(
+  match list with
+  | SuiteLettresNonvide (l, rest) ->
+    if l = e then true 
+    else is_in_lettre_list rest e
+  | Lettre(l) -> 
+    l = e
+)
+
+let rec is_redundant (case_list : case list) : bool =
+(
+  let rec is_in_case_list l list = 
+  (
+    match list with
+    | [] -> false
+    | Case(l2,inst)::r when (l = l2) -> true
+    | _::r -> is_in_case_list l r
+  )
+  in
+  match case_list with
+  | [] -> false
+  | Case(l,inst)::r when (is_in_case_list l r || is_not_deterministic inst) -> true
+  | Case(l,inst)::r -> is_redundant r
+)
+and is_not_deterministic (instr : instruction) : bool = 
+(
+  match instr with
+  | SwitchCase (switch_case) -> 
+  (
+    match switch_case with
+    | SwitchCaseState (case_list) -> is_redundant case_list
+    | SwitchCaseNext (case_list) -> is_redundant case_list
+    | SwitchCaseTop (case_list) -> is_redundant case_list
+  )
+  | _ -> false
+)
+
 
 (* ------------------------- Main function ----------------------------- *)
 
@@ -117,6 +162,19 @@ let execute_automate (a : automate) (word : char list) : unit =
 
   let Inputsymbols (input_symbols) = in_symb in
 
+  (* verifications de la bonne formation de l'automate *)
+  if not (is_in_lettre_list states init_state)
+  then raise InitialStateNotInList
+  else
+
+  if not (is_in_lettre_list stack_symbols in_stack)
+  then raise InitialStackNotInList
+  else
+
+  if is_not_deterministic instr
+  then raise NonDeterministicException
+  else
+
   (* instruction part*)
  (* let SwitchCase(switch_case) = instr in 
   let SwitchCaseState(switch_case_state) = switch_case in *)
@@ -124,9 +182,9 @@ let execute_automate (a : automate) (word : char list) : unit =
   try 
     execute_instruction instr instr init_stack init_state word
   with
-  | NonEmptyFinalStackException2 -> print_string "The word is not accepted,\ninput is empty, but stack isn't.\n"
-  | EmptyStackException2 -> print_string "The word is not accepted,\nstack is empty, but input isn't.\n"
-  | InstructionNotFound2 -> print_string "The word is not accepted,\nno transition has been applied.\n"
-  | RejectException -> print_string "The word is not accepted,\nrejected by automaton.\n"
+  | NonEmptyFinalStackException2 -> print_string "Word not accepted,\ninput is empty, but stack isn't.\n"
+  | EmptyStackException2 -> print_string "Word not accepted,\nstack is empty, but input isn't.\n"
+  | InstructionNotFound2 -> print_string "Word not accepted,\nno transition can be applied.\n"
+  | RejectException -> print_string "Word not accepted,\nrejected by automaton.\n"
   | _ -> print_string "Error\n"    
   

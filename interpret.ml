@@ -239,8 +239,8 @@ let execute_automate (a : automate) (word : char list) : unit =
   try
     go_to_next_state in_st word initial_stack trans_list
   with
-    | NonEmptyFinalStackException -> print_string "The word is not accepted,\ninput is empty, but stack isn't.\n"
-    | EmptyStackException -> print_string "The word is not accepted,\nstack is empty, but input isn't.\n"
-    | TransitionNotFound -> print_string "The word is not accepted,\nno transition has been applied.\n"
+    | NonEmptyFinalStackException -> print_string "Word not accepted,\ninput is empty, but stack isn't.\n"
+    | EmptyStackException -> print_string "Word not accepted,\nstack is empty, but input isn't.\n"
+    | TransitionNotFound -> print_string "Word not accepted,\nno transition can be applied.\n"
     | _ -> print_string "Error\n"
 

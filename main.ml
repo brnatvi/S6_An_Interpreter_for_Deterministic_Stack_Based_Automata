@@ -1,6 +1,7 @@
 open Prints
 open Prints2
 open Interpret
+open Interpret2
 
 let usage () =
   print_string "Usage: ./grammaire [options] file [word] \n\n";
@@ -35,11 +36,11 @@ let exec_automate fun_grammaire fun_lexer fun_interpret file word =
       try fun_interpret a (word_to_list word)
       with
       | InitialStateNotInList -> 
-        print_string "Invalide automate,\nthe initial state symbol is not in list of state symbols\n"
+        print_string "Invalid automaton,\nthe initial state symbol is not in the list of state symbols\n"
       | InitialStackNotInList -> 
-        print_string "Invalide automate,\nthe initial stack symbol is not in list of stack symbols\n"
+        print_string "Invalid automaton,\nthe initial stack symbol is not in list of stack symbols\n"
       | NonDeterministicException -> 
-        print_string "Invalide automate,\nhis transitions are not deterministic\n"
+        print_string "Invalid automaton, non deterministic\n"
       | e -> (print_string (Printexc.to_string e); print_string "\n")
     )
     | None -> ()
