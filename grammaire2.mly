@@ -75,9 +75,7 @@ switch_case:
   
 instruction:
   POP; CHANGE; d = digit {PopAndChange(d)}
-| CHANGE; d = digit; POP {PopAndChange(d)}
 | PUSH; c = upper; CHANGE; d = digit {PushAndChange(c,d)}
-| CHANGE; d = digit; PUSH; c = upper {PushAndChange(c,d)}
 | POP {Pop}
 | PUSH; c = upper {Push(c)}
 | REJECT {Reject}

@@ -34,26 +34,6 @@ let rec pull_list l =
   | h::tail -> pull_list tail
 )
 
-(* GENERIC: delete last element from list, return list *)
-let list_without_last l =
-(
-  let rev_list = List.rev l in
-  match rev_list with
-  | [] -> raise (Empty "List is empty")
-  | [i] -> []
-  | h::tail -> List.rev tail
-)
-
-(* GENERIC: pull last_but_one element from list *)
-let rec get_last_but_one l =
-(
-  let rev_list = List.rev l in
-    match rev_list with
-    | [] -> raise Error
-    | [i] -> i
-    | h1::h2::tail -> h2
-)
-
 (* ------------------------- Service functions ----------------------------- *)
 
 let compare_char_lettre_ou_vide (st : lettre_ou_vide) (l: char) : bool = 
@@ -139,7 +119,7 @@ let rec go_to_next_state (curr_state : lettre) (word : char list) (st : stack) (
   | [] -> 
   (
     match st with
-    | Emptystack -> print_string "mot valide!\n"
+    | Emptystack -> print_string "This word is accepted by automate !\n"
     | _ -> 
     (
       let trans_opt = get_transition_from_state curr_state None st trans_list in
@@ -235,7 +215,7 @@ let execute_automate (a : automate) (word : char list) : unit =
 
   let trans_list = 
     match trans_l with
-    | Emptylist -> raise (EmptyTransitionList "empty transition list")
+    | Emptylist -> raise (EmptyTransitionList "Empty transition list")
     | Translist(tl) -> tl
   in
 
@@ -259,8 +239,8 @@ let execute_automate (a : automate) (word : char list) : unit =
   try
     go_to_next_state in_st word initial_stack trans_list
   with
-    | NonEmptyFinalStackException -> print_string "mot non valide,\nl'entrée est épuisée sans que la pile soit vide.\n"
-    | EmptyStackException -> print_string "mot non valide,\nla pile est vide sans que l'entrée soit épuisée.\n"
-    | TransitionNotFound -> print_string "mot non valide,\naucune transition ne s'applique.\n"
-    | _ -> print_string "erreur\n"
+    | NonEmptyFinalStackException -> print_string "The word is not accepted,\ninput is empty, but stack isn't.\n"
+    | EmptyStackException -> print_string "The word is not accepted,\nstack is empty, but input isn't.\n"
+    | TransitionNotFound -> print_string "The word is not accepted,\nno transition has been applied.\n"
+    | _ -> print_string "Error\n"
 

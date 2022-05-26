@@ -1,11 +1,14 @@
 open Prints
+open Prints2
 open Interpret
 
 let usage () =
-  print_string "Usage: ./grammaire [option] file [word] \n\n";
+  print_string "Usage: ./grammaire [options] file [word] \n\n";
   print_string "Options: \n";
-  print_string "--reprint     - compose abstract syntax tree based input file and reprint it\n"
-  (*print_string "--interpret   - execute automaton based input file on word\n"*)
+  print_string "--reprint   --v1  - reprint automate described by transitions\n";
+  print_string "--reprint   --v2  - reprint automate described by program\n";
+  print_string "--interpret --v1  - check if word is accepted by automate described by transitions which is in file\n";
+  print_string "--interpret --v2  - check if word is accepted by automate described by program which is in file\n"
 
 let exec_automate fun_grammaire fun_lexer fun_interpret file word =
 (
@@ -30,11 +33,11 @@ let exec_automate fun_grammaire fun_lexer fun_interpret file word =
       try fun_interpret a (word_to_list word)
       with
       | InitialStateNotInList -> 
-        print_string "automate non valide,\nl'état initial n'est pas dans la liste\n"
+        print_string "Invalide automate,\nthe initial state symbol is not in list of state symbols\n"
       | InitialStackNotInList -> 
-        print_string "automate non valide,\nle symbole de pile initial n'est pas dans la liste\n"
+        print_string "Invalide automate,\nthe initial stack symbol is not in list of stack symbols\n"
       | NonDeterministicException -> 
-        print_string "automate non valide,\ntransitions non déterministes\n"
+        print_string "Invalide automate,\nhis transitions are not deterministic\n"
       | e -> (print_string (Printexc.to_string e); print_string "\n")
     )
     | None -> ()
@@ -42,8 +45,9 @@ let exec_automate fun_grammaire fun_lexer fun_interpret file word =
 )
 
 let main () =
-  (match Sys.argv with
-        | [|_;"--reprint";file|] -> 
+  (
+    match Sys.argv with
+        | [|_;"--reprint";version;file|] -> 
           (
             let ch = open_in file in
 
@@ -61,18 +65,18 @@ let main () =
               in
           
             (match ast with
-              | Some a -> Printf.printf "%s" (Prints.automate_as_string a)      
+              | Some a -> if version = "--v1" then Prints.automate_as_string_v1 a else Prints.automate_as_string_v2 a                
               | None -> ()
             )
           )
+              
+        | [|_;"--interpret";"--v1";file;word|] ->
+            exec_automate Grammaire.automate Lexer.lexer Interpret.execute_automate file word
 
-        | [|_;"-v2";file;word|] ->
+        | [|_;"--interpret";"--v2";file;word|] ->
           exec_automate Grammaire2.automate Lexer2.lexer Interpret2.execute_automate file word
-
-        | [|_;"-v1";file;word|] ->
-          exec_automate Grammaire.automate Lexer.lexer Interpret.execute_automate file word
           
         | _ -> usage()
   )
 
-  let () = main ()
+let () = main ()
