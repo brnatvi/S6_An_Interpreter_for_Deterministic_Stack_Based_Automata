@@ -19,7 +19,6 @@ let push_to_stack (st: stack) (l: lettre) : stack =
   l::st
 )
 
-
 (* Pop *)
 let pop_from_stack (st: stack) : stack =
 (
@@ -27,11 +26,6 @@ let pop_from_stack (st: stack) : stack =
   | [] -> raise EmptyStackException2
   | _ :: tail -> tail
 )
-
-
-(* Change *)
-let make_change l = failwith "TODO"
-  
 
 
 (* ------------------------- Auxilary functions ------------------------------- *)
@@ -49,7 +43,6 @@ let rec get_instr_from_switch_case (case_list : case list) (attribute:lettre) : 
   | Case(l,inst)::_ when l = attribute -> Some(inst)
   | _::tail -> get_instr_from_switch_case tail attribute
 
-
 let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) (cur_stack: stack) (cur_state: lettre) (cur_word: char list) : unit =
 (
   match cur_instr with
@@ -62,48 +55,43 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
   | SwitchCase (switch_case) -> 
   (
     match switch_case with
-    | SwitchCaseState (case_list) ->( 
-      let instr = get_instr_from_switch_case case_list cur_state in
-      match instr with
-      | None -> (
-        match cur_stack, cur_word with
-        | [],[] -> print_string "mot valide!"
-        | _,_ -> raise InstructionNotFound2 
+    | SwitchCaseState (case_list) -> 
+    (
+      match cur_stack, cur_word with
+      | [],[] -> print_string "mot valide!\n"
+      | _,_ -> 
+      (
+        let instr = get_instr_from_switch_case case_list cur_state in
+        match instr with
+        | None -> raise InstructionNotFound2 
+        | Some i ->
+          execute_instruction first_instr i cur_stack cur_state cur_word
       )
-      | Some i -> (
-        execute_instruction first_instr i cur_stack cur_state cur_word
-      )
-    ) 
-    | SwitchCaseNext (case_list) ->(
-      let c = 
-        try (List.hd cur_word) 
-        with Failure x -> raise NonEmptyFinalStackException2
-      in
-      let instr = get_instr_from_switch_case case_list (Lower c) in
-      match instr with
-      | None -> (
-        match cur_stack, cur_word with
-        | [],[] -> print_string "mot valide!"
-        | _,_ -> raise InstructionNotFound2 
-      )
-      | Some i -> (
-        execute_instruction first_instr i cur_stack cur_state (list_without_first cur_word)
+    )
+    | SwitchCaseNext (case_list) ->
+    (
+      match cur_stack, cur_word with
+      | [],[] -> print_string "mot valide!\n"
+      | _,[] -> raise NonEmptyFinalStackException2
+      | _,c::rest_word -> 
+      (
+        let instr = get_instr_from_switch_case case_list (Lower c) in
+        match instr with
+        | None -> raise InstructionNotFound2
+        | Some i -> 
+          execute_instruction first_instr i cur_stack cur_state rest_word
       )
     )
     | SwitchCaseTop (case_list) -> (
-      let t = 
-        try (List.hd cur_stack)
-        with Failure x -> raise EmptyStackException2
-      in
-      let instr = get_instr_from_switch_case case_list t in
-      match instr with
-      | None -> (
-        match cur_stack, cur_word with
-        | [],[] -> print_string "mot valide!"
-        | _,_ -> raise InstructionNotFound2 
-      )
-      | Some i -> (
-        execute_instruction first_instr i cur_stack cur_state cur_word
+      match cur_stack, cur_word with
+      | [],[] -> print_string "mot valide!\n"
+      | [],_ -> raise EmptyStackException2
+      | t::rest_stack,_ -> (
+        let instr = get_instr_from_switch_case case_list t in
+        match instr with
+        | None -> raise InstructionNotFound2
+        | Some i -> 
+          execute_instruction first_instr i cur_stack cur_state cur_word
       )
     )
   )
