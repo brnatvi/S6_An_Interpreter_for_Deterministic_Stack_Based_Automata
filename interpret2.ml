@@ -62,7 +62,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     | SwitchCaseState (case_list) -> 
     (
       match cur_stack, cur_word with
-      | [],[] -> print_string "Word is valid!\n"
+      | [],[] -> print_string "This word is accepted by automate !\n"
       | _,_ -> 
       (
         let instr = get_instr_from_switch_case case_list cur_state in
@@ -75,7 +75,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     | SwitchCaseNext (case_list) ->
     (
       match cur_stack, cur_word with
-      | [],[] -> print_string "Word is valid!\n"
+      | [],[] -> print_string "This word is accepted by automate !\n"
       | _,[] -> raise NonEmptyFinalStackException2
       | _,c::rest_word -> 
       (
@@ -88,7 +88,7 @@ let rec execute_instruction (first_instr: instruction) (cur_instr: instruction) 
     )
     | SwitchCaseTop (case_list) -> (
       match cur_stack, cur_word with
-      | [],[] -> print_string "Word is valid!\n"
+      | [],[] -> print_string "This word is accepted by automate !\n"
       | [],_ -> raise EmptyStackException2
       | t::rest_stack,_ -> (
         let instr = get_instr_from_switch_case case_list t in

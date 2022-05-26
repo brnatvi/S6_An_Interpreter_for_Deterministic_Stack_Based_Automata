@@ -12,11 +12,11 @@ let lettre_ou_vide_as_string c =
   )
 
 (* Generic function: return generic list as string with delim as delimiter, f = function as_string for elements of list *)
-let rec list_as_string list func delim =
+let rec list_as_string list func delim offs =
   (match list with
   | [] -> ""
-  | [x] -> func x
-  | x::xs -> func x ^ delim ^ list_as_string (xs) (func) (delim)
+  | [x] -> func x offs
+  | x::xs -> (func x offs) ^ delim ^ list_as_string (xs) (func) (delim) (offs)
   )
 
 let rec suite_lettres_nonvide_as_string (s: suite_lettres_nonvide) : string =
@@ -24,21 +24,6 @@ let rec suite_lettres_nonvide_as_string (s: suite_lettres_nonvide) : string =
   | Lettre l -> lettre_as_string l
   | SuiteLettresNonvide (l, li) -> lettre_as_string l ^ "," ^ suite_lettres_nonvide_as_string li
   )
-
-(*let rec rest_stack_as_string (st: stack) : string =
-  let Stack stak = st in
-  (match stak with
-  | [] -> ""
-  | h :: tail -> rest_stack_as_string (Stack(tail)) ^ lettre_as_string h ^ ";"
-  )
-
-let stack_as_string (st: stack) : string =
-  let Stack stak = st in
-  (match stak with
-    | [] -> ""
-    | h :: tail -> rest_stack_as_string (Stack(tail)) ^ lettre_as_string h
-)
-*)
 
 
 (* ----------------- Parts of definition as string ------------------------ *)
@@ -98,13 +83,23 @@ let inputsymbols_as_string (st: inputsymbols) : string =
 
   (* -------------- Prints for etape 3 ---------------- *)
 
-let rec instruction_as_string (i: instruction) : string =   
+let rec offset_as_string (depth:int) : string =
+    match depth with
+    | 0 -> ""
+    | _ -> "   " ^ offset_as_string (depth - 1)
+  
+  
+let rec instruction_as_string (i: instruction) (d: int) : string =   
+  let rec case_as_string (c: case) (d: int)  : string =
+    let Case(l, instr) = c in
+    offset_as_string (d + 2)^ lettre_as_string l ^ ": " ^ instruction_as_string (instr) (d + 1) ^ "\n"
+  in
   ( 
     match i with
     | Pop -> "pop"
     | Push(lettre) -> "push " ^ lettre_as_string(lettre)
     | Reject -> "reject"
-    | Change(lettre) -> "change" ^ lettre_as_string(lettre)
+    | Change(lettre) -> "change " ^ lettre_as_string(lettre)
     | PopAndChange(lettre) -> "pop change " ^ lettre_as_string(lettre)  
     | PushAndChange(c, d) -> "push " ^ lettre_as_string(c) ^ " change " ^ lettre_as_string(d)    
     | SwitchCase(switch_case) -> 
@@ -113,30 +108,22 @@ let rec instruction_as_string (i: instruction) : string =
         | SwitchCaseState (case_list) -> 
           (
             match case_list with
-            | [] -> "\n"
-            | h :: tail -> failwith "TODO"                     
-             (* let Case(int, instr1) = h in             
-              "case state of\n    "^(lettre_as_string int)^": "^(instruction_as_string instr1)^"\n"^(list_as_string tail instruction_as_string"\n")
-              *)
+            | [] -> ""
+            | h::tail -> offset_as_string (d+1)^"case state of\n" ^ case_as_string h (d+1) ^ (list_as_string tail case_as_string "" (d+1))
           )
+        
         | SwitchCaseNext (case_list) -> 
           (
             match case_list with
-            | [] -> "\n"
-            | h :: tail -> failwith "TODO"    
-               (* let Case(int, instr1) = h in 
-                "case next of\n    begin:\n"^(lettre_as_string int )^": "^(instruction_as_string instr1)^"\n"^(list_as_string tail instruction_as_string "\n")^"\nend\n"
-                *)
+            | [] -> ""
+            | h::tail -> "begin\n" ^ offset_as_string (d+2)^ "case next of\n" ^ case_as_string h (d+1) ^ (list_as_string tail case_as_string "" (d+1))^(offset_as_string (d+2))^ "end" 
           )
-
+        
         | SwitchCaseTop (case_list) -> 
           (
             match case_list with
-            | [] -> "\n"
-            | h :: tail -> failwith "TODO"  
-             (* let Case(int, instr1) = h in 
-              "case top of\n    begin:\n"^(lettre_as_string int )^": "^(instruction_as_string instr1)^"\n"^(list_as_string tail instruction_as_string "\n")^"\nend\n"
-              *)
+            | [] -> ""
+            | h::tail -> "begin\n"^ offset_as_string (d+2)^"case top of\n" ^ case_as_string h (d+1) ^ (list_as_string tail case_as_string "" (d+1)) ^(offset_as_string (d+2))^ "end" 
           )
       )      
   )
@@ -145,4 +132,4 @@ let rec instruction_as_string (i: instruction) : string =
 
 let automate_as_string_v2 (a: automate) : string =
   let Automate (d, inst) = a in 
-    declarations_as_string d ^ instruction_as_string inst ^ "\n"
+    declarations_as_string d ^ "program:\n" ^ instruction_as_string inst 1

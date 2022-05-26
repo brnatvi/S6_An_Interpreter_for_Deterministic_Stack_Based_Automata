@@ -77,7 +77,3 @@ SwitchCaseState ([ Case ('1', SwitchCaseNext([ Case('a', Push('a')) ;
                 ])
 *)
 
-         
-
-
-  

@@ -91,8 +91,7 @@ let rec get_transition_from_state (curr_state : lettre) (c : lettre_ou_vide) (st
   
   match trans_list with
   | [] -> None
-  | Transition(t_state, t_c, t_stack_start, t_next_state, t_stack)::li 
-      (* je sais qu'on peut faire plus simplement mais je me souoviens pas de la syntaxe *)
+  | Transition(t_state, t_c, t_stack_start, t_next_state, t_stack)::li     
       when(t_state = curr_state && t_c = c && t_stack_start = stack_start)
       -> Some (Transition(t_state, t_c, t_stack_start, t_next_state, t_stack))
   | _::li -> get_transition_from_state curr_state c st li
