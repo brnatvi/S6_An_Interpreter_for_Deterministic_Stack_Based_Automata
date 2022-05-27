@@ -1,0 +1,43 @@
+BRAGINA Natalia et  GANGNEUX Paul
+
+
+Compilation : make
+
+Run:          ./grammaire [options] file [word]
+
+Options: 
+ --reprint   --v1  - affichage automate décrit par transitions
+ --reprint   --v2  - affichage automate décrit par programme
+ --interpret --v1  - cherche si le mot <word> est accepté par automate décrit par transitions dans <file>
+ --interpret --v2  - cherche si le mot <word> est accepté par automate décrit par programme dans <file>
+
+lancer le programme sans option est similaire à le lancer avec les options --interpret --v2
+
+exemple d'éxécution :
+  ./grammaire --interpret --v1 exemples_phase1/palindrome abcba
+
+Notre programme commence par créer l'automate décrit par le ficher <file>, puis
+va vérifier qu'il est bien formé et qu'il est déterministe, et enfin va exécuter 
+l'automate sur le mot <word>.
+
+Nous avans ajouté dans les exemples plusieurs automates non-determinsites, et un
+automate deterministe avec transitions epsilon, qui accepte les mots ayant le même
+nombre de 'a' que de 'b', et finissant par un unique 'c'.
+
+Nous avons réalisé les parties 1, 2, 3 du sujet. En travaillant sur le projet, 
+nous avons effectué plusieurs réunions pour développer une compréhension
+commune des tâches.
+
+Répartition des tâches :
+
+étape 1 : 
+lexer, ast, première version de l'interpréteur, affichage – Natalia
+parser, correction de ast et l'interpréteur – Paul
+
+étape 2 : 
+gestion des erreurs – Paul
+
+étape 3 : 
+lexer, parser, ast – Paul
+interpréteur et correction de l’interpréteur – conjointe
+affichage, finition – Natalia

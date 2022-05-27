@@ -72,16 +72,16 @@ let reprint_automaton grammaire_fun lexer_fun print_fun file =
 let main () =
 (
   match Sys.argv with
-      | [|_;"--reprint";"--v1";file|] -> 
+      | [|_;"--reprint";"--v1";file|] | [|_;"--v1";"--reprint";file|] -> 
         reprint_automaton Grammaire.automate Lexer.lexer Prints.automate_as_string_v1 file
       
-      | [|_;"--reprint";"--v2";file|] -> 
+      | [|_;"--reprint";"--v2";file|] | [|_;"--v2";"--reprint";file|] | [|_;"--reprint";file|] -> 
         reprint_automaton Grammaire2.automate Lexer2.lexer Prints2.automate_as_string_v2 file
       
-      | [|_;"--interpret";"--v1";file;word|] | [|_;"--v1";file;word|] ->
-          exec_automate Grammaire.automate Lexer.lexer Interpret.execute_automate file word
+      | [|_;"--interpret";"--v1";file;word|] | [|_;"--v1";"--interpret";file;word|] | [|_;"--v1";file;word|] ->
+        exec_automate Grammaire.automate Lexer.lexer Interpret.execute_automate file word
 
-      | [|_;"--interpret";"--v2";file;word|] | [|_;"--v2";file;word|] | [|_;file;word|] ->
+      | [|_;"--interpret";"--v2";file;word|] | [|_;"--v2";"--interpret";file;word|] | [|_;"--v2";file;word|] | [|_;file;word|] ->
         exec_automate Grammaire2.automate Lexer2.lexer Interpret2.execute_automate file word
         
       | _ -> usage()
