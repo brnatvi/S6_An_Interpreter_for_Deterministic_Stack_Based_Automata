@@ -41,6 +41,8 @@ Exemple of such description:
 
 This automata recognizes the set  _{ wcẇ | w ∈ {a, b} }_, which is a special case of the palindromes.
 
+For more information about this project, see its description [here](https://github.com/brnatvi/S6_An_Interpreter_for_Deterministic_Stack_Based_Automata/blob/master/projet.pdf) (text in French).
+
 # Usage
 ## Compile
 ```
@@ -54,7 +56,7 @@ make
 **Options:**
 ```
 --reprint   --v1  - reprint automaton described by transitions
---reprint   --v2  - reprint automaton described by program\
+--reprint   --v2  - reprint automaton described by program
 --interpret --v1  - check if word is accepted by automaton described by its transitions which is in file
 --interpret --v2  - check if word is accepted by automaton described by a program which is in file
 ```
